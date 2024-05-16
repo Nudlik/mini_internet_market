@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
+    'djoser',
 
     'users.apps.UsersConfig',
     'categories.apps.CategoriesConfig',
@@ -154,4 +155,9 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
+}
+
+# настройки djoser
+DJOSER = {
+    'SEND_ACTIVATION_EMAIL': False,
 }
