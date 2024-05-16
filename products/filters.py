@@ -18,6 +18,7 @@ class ProductFilterSet(django_filters.rest_framework.FilterSet):
         method='full_sub_category_',
         label='Поиск по категории и по подкатегории'
     )
+    quantity__gte = django_filters.NumberFilter(field_name='quantity', lookup_expr='gte')
 
     class Meta:
         model = Product
