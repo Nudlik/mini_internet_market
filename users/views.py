@@ -1,7 +1,13 @@
 from djoser import views
+from djoser.serializers import UserCreateSerializer
+from rest_framework.permissions import AllowAny, IsAdminUser
+
+from users.permissions import IsEmailOwner
 
 
 class OverrideMethodsMeta(type):
+    """ Перегружаю методы класса юзер-джосера, не по СОЛИД, но создатели библиотеки сделали не модульный код :( """
+
     set_none = {
         'activation',
         'resend_activation',
@@ -20,4 +26,22 @@ class OverrideMethodsMeta(type):
 
 
 class UserViewSet(views.UserViewSet, metaclass=OverrideMethodsMeta):
-    pass
+    perms_methods = {
+        'create': [AllowAny],
+        'update': [IsEmailOwner | IsAdminUser],
+        'partial_update': [IsEmailOwner | IsAdminUser],
+        'destroy': [IsEmailOwner | IsAdminUser],
+    }
+    choice_serializer = {
+        'create': UserCreateSerializer,
+    }
+
+    def get_permissions(self):
+        if (permission_ := self.perms_methods.get(self.action)) is None:
+            return super().get_permissions()
+        return [permission() for permission in permission_]
+
+    def get_serializer_class(self):
+        if (serializer := self.choice_serializer.get(self.action)) is None:
+            return super().get_serializer_class()
+        return serializer
