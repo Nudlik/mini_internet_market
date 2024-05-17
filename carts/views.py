@@ -5,7 +5,7 @@ import stripe
 from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, status
 from rest_framework.decorators import action as _action, api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from carts.models import Cart
@@ -20,13 +20,16 @@ logger = logging.getLogger(__name__)
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     queryset = Cart.objects.all()
+    permission_classes = [IsAuthenticated]
     choice_serializer = {
         'list': CartListSerializer,
         'retrieve': CartListSerializer,
     }
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            return self.queryset.filter(user=self.request.user)
+        return self.queryset.count()
 
     def get_serializer_class(self):
         return self.choice_serializer.get(self.action, self.serializer_class)
