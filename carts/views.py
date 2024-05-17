@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from carts.models import Cart
 from carts.serializers import CartListSerializer, CartSerializer
+from carts.services.mail_sender import send_mail_purchase
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -30,6 +31,14 @@ class CartViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        qs = qs.first()
+        payment_link = '0'
+        send_mail_purchase(
+            title=f'Оплата покупки',
+            message=f'Покупка {qs.quantity} ед. {qs.product.name} цена за ед. {qs.product.price}\n'
+                    f'Ссылка: {payment_link}',
+            email=request.user.email,
+        )
         return Response(
             data={'success': _('Мы выслали вам письмо на почту с сылкой для оплаты покупки')},
             status=status.HTTP_200_OK

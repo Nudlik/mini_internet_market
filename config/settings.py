@@ -30,7 +30,12 @@ SECRET_KEY = env.str('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
 DEBUG_EMAIL = env.bool('DEBUG_EMAIL', False)
 
-ALLOWED_HOSTS = []
+SITE_HOST_NAME = env.str('SITE_HOST_NAME')
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    SITE_HOST_NAME,
+    *env.list('ALLOWED_HOSTS_NAMES'),
+]
 
 # Application definition
 
@@ -175,3 +180,9 @@ EMAIL_PORT = env.int('EMAIL_PORT')
 EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
 EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL')
+
+# настройка stripe
+STRIPE_SECRET_KEY = env.str('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = env.str('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_WEBHOOK = env.str('STRIPE_SECRET_WEBHOOK', None)
+STRIPE_WEBHOOK_URL = 'https://' + SITE_HOST_NAME
