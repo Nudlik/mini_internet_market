@@ -1,11 +1,20 @@
+import json
+import logging
+
+import stripe
 from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, status
-from rest_framework.decorators import action as _action
+from rest_framework.decorators import action as _action, api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from carts.models import Cart
 from carts.serializers import CartListSerializer, CartSerializer
 from carts.services.mail_sender import send_mail_purchase
+from carts.services.payment import stripe_checkout_session
+from config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class CartViewSet(viewsets.ModelViewSet):
@@ -32,7 +41,20 @@ class CartViewSet(viewsets.ModelViewSet):
             )
 
         qs = qs.first()
-        payment_link = '0'
+        domain_url = '/'.join(self.request.build_absolute_uri().rsplit('/')[:3])
+        session = stripe_checkout_session(
+            price=qs.product.price,
+            name=qs.product.name,
+            description=qs.product.description,
+            quantity=qs.quantity,
+            domain_url=domain_url,
+        )
+
+        logger.debug(json.dumps(session, indent=4, ensure_ascii=False))
+
+        # здесь будет точка входа для вебхука
+
+        payment_link = session.url
         send_mail_purchase(
             title=f'Оплата покупки',
             message=f'Покупка {qs.quantity} ед. {qs.product.name} цена за ед. {qs.product.price}\n'
@@ -43,3 +65,52 @@ class CartViewSet(viewsets.ModelViewSet):
             data={'success': _('Мы выслали вам письмо на почту с сылкой для оплаты покупки')},
             status=status.HTTP_200_OK
         )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def webhook(request):
+    """ Обработка событий stripe """
+    try:
+        event = None
+        payload = request.body
+        sig_header = request.headers['STRIPE_SIGNATURE']
+    except KeyError as e:
+        logger.error(e)
+        return Response({'error': 'Вебхук для страйпа'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_SECRET_WEBHOOK
+        )
+    except ValueError as e:
+        logger.error(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    except stripe.error.SignatureVerificationError as e:
+        logger.error(e)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # Handle the event
+    logger.debug('Unhandled event type {}'.format(event['type']))
+    if event['type'] == 'checkout.session.completed':
+        # логика вычета количества таваров из корзины и из общего кол-ва товаров
+        # возможность записи покупки, логирование в базу и тд.
+        print(event)
+
+    return Response({'success': True})
+
+
+@api_view(['GET'])
+def success(request):
+    """ Успешная оплата """
+
+    logger.info('Успешная оплата')
+    return Response({'success': True})
+
+
+@api_view(['GET'])
+def canceled(request):
+    """ Отмена оплаты """
+
+    logger.info('Отмена оплаты')
+    return Response({'canceled': True})
