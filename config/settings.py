@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import json
+import os
 from pathlib import Path
 
 from environs import Env
@@ -186,3 +187,9 @@ STRIPE_SECRET_KEY = env.str('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = env.str('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_WEBHOOK = env.str('STRIPE_SECRET_WEBHOOK', None)
 STRIPE_WEBHOOK_URL = 'https://' + SITE_HOST_NAME
+
+# настройка logging
+path_to_log = BASE_DIR / 'utils/log.json'
+if os.path.exists(path_to_log):
+    with open(path_to_log, encoding='utf-8') as log:
+        LOGGING = json.load(log)
