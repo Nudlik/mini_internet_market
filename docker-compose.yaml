@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    tty: false
+    command: /bin/sh -c "python manage.py migrate; python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+        - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+    ports:
+        - "15432:5432"
+
+  redis:
+    image: redis:alpine
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery-worker:
+    build: .
+    command: celery -A config worker -l INFO
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - django
+
+volumes:
+  postgres_data:
