@@ -13,6 +13,7 @@ class CartListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = [
+            'id',
             'product',
             'quantity',
             'price',
@@ -38,6 +39,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = [
+            'id',
             'product',
             'quantity',
         ]
