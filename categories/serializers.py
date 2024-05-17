@@ -11,3 +11,12 @@ class CategorySerializer(serializers.ModelSerializer):
             'name',
             'child_category',
         ]
+
+
+class CategoryProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = [
+            'id',
+            'name',
+        ]
