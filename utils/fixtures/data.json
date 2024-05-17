@@ -1,0 +1,134 @@
+[
+{
+    "model": "carts.cart",
+    "pk": 2,
+    "fields": {
+        "user": 1,
+        "product": 1,
+        "quantity": 5,
+        "is_discount": false
+    }
+},
+{
+    "model": "carts.cart",
+    "pk": 3,
+    "fields": {
+        "user": 1,
+        "product": 3,
+        "quantity": 1,
+        "is_discount": false
+    }
+},
+{
+    "model": "carts.cart",
+    "pk": 4,
+    "fields": {
+        "user": 1,
+        "product": 1,
+        "quantity": 2,
+        "is_discount": false
+    }
+},
+{
+    "model": "categories.category",
+    "pk": 1,
+    "fields": {
+        "name": "Игрушки",
+        "child_category": null
+    }
+},
+{
+    "model": "categories.category",
+    "pk": 2,
+    "fields": {
+        "name": "Инструменты",
+        "child_category": null
+    }
+},
+{
+    "model": "categories.category",
+    "pk": 3,
+    "fields": {
+        "name": "Взрослые",
+        "child_category": 1
+    }
+},
+{
+    "model": "categories.category",
+    "pk": 4,
+    "fields": {
+        "name": "Детские",
+        "child_category": 1
+    }
+},
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "name": "Мячик",
+        "price": "200.00",
+        "discount": "180.00",
+        "quantity": 350,
+        "description": "Мягкий игрушечный мячик",
+        "category": 1,
+        "owner": 1
+    }
+},
+{
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+        "name": "Плюшевый мишка",
+        "price": "550.00",
+        "discount": "500.00",
+        "quantity": 35,
+        "description": "Плюшевый мишка коричневый цвет",
+        "category": 1,
+        "owner": 1
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "name": "Молоток",
+        "price": "800.00",
+        "discount": "750.00",
+        "quantity": 10,
+        "description": "Удобно забивать гвозди",
+        "category": 2,
+        "owner": 1
+    }
+},
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "name": "Бусы",
+        "price": "1500.00",
+        "discount": "1300.00",
+        "quantity": 39,
+        "description": "Красивые на шею :)",
+        "category": 3,
+        "owner": 1
+    }
+},
+{
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$720000$6wuaJnnnXa6Jko8bEEtdAg$4KaRcE6NNTgOcmvZtDx2z4lmQahs0FXH0JZp2V0nN9k=",
+        "last_login": "2024-05-16T06:00:37.473Z",
+        "is_superuser": true,
+        "username": "nudlik",
+        "first_name": "",
+        "last_name": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2024-05-16T06:00:30.768Z",
+        "email": "gegorp@mail.ru",
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
