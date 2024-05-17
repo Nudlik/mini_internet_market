@@ -193,3 +193,10 @@ path_to_log = BASE_DIR / 'utils/log.json'
 if os.path.exists(path_to_log):
     with open(path_to_log, encoding='utf-8') as log:
         LOGGING = json.load(log)
+
+# настройка celery
+CELERY_BROKER_URL = env.str('REDIS_LOCATION')
+CELERY_RESULT_BACKEND = env.str('REDIS_LOCATION')
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
