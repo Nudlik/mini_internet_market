@@ -55,7 +55,7 @@ class CartViewSet(viewsets.ModelViewSet):
         # здесь будет точка входа для вебхука
 
         payment_link = session.url
-        send_mail_purchase(
+        send_mail_purchase.delay(
             title=f'Оплата покупки',
             message=f'Покупка {qs.quantity} ед. {qs.product.name} цена за ед. {qs.product.price}\n'
                     f'Ссылка: {payment_link}',
